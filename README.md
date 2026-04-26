@@ -15,7 +15,7 @@ This project is a fully functional 4-wheel robot car built on an Arduino UNO. It
 
 ## Installation
 
-### 1 — Upload the Arduino Sketch
+### 1 - Upload the Arduino Sketch
 
 **Requirements:**
 - [Arduino IDE](https://www.arduino.cc/en/software) 1.8.x or newer
@@ -152,11 +152,9 @@ cd android-app
 
 ## Meta
 
-Sreeharsha K – [@YourTwitter](https://twitter.com/yourtwitter) – your@email.com
-
 Distributed under the MIT license. See `LICENSE` for more information.
 
-[https://github.com/yourname/robot-car](https://github.com/yourname/robot-car)
+[https://github.com/Creator101-commits/robot-car](https://github.com/Creator101-commits/robot-car)
 
 ## Contributing
 
