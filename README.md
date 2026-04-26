@@ -168,7 +168,7 @@ Distributed under the MIT license. See `LICENSE` for more information.
 
 ## Acknowledgments
 
-* [LAFVIN](https://www.lafvin.com) — for the robot car kit that this project is built on. The LAFVIN 4WD smart car kit provides the chassis, motors, motor driver board, HC-SR04 ultrasonic sensor, IR sensors, and servo mount used in this build.
+* [LAFVIN](https://www.lafvin.com) — for the robot car kit that this project is built on. The LAFVIN 4WD smart car kit provides the chassis, motors, motor driver board, HC-SR04 ultrasonic sensor, IR sensors, and servo mount used in this build. They also provided the foundational code but I edited a lot of it to my custom robot.
 
 <!-- Markdown link & img dfn's -->
 [wiki]: https://github.com/yourname/robot-car/wiki
