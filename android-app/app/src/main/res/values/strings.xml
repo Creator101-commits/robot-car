@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Robot Car Controller</string>
+
+    <!-- Bluetooth connection -->
+    <string name="btn_connect">Connect to Bluetooth</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="status_disconnected">○  Not Connected</string>
+    <string name="status_connecting">Connecting…</string>
+
+    <!-- D-Pad controls -->
+    <string name="btn_forward">▲  Forward</string>
+    <string name="btn_backward">▼  Back</string>
+    <string name="btn_left">◀  Left</string>
+    <string name="btn_right">Right  ▶</string>
+    <string name="btn_stop">■  Stop</string>
+
+    <!-- Autonomous mode buttons -->
+    <string name="btn_avoidance">Obstacle Avoidance</string>
+    <string name="btn_tracking">Line Tracking</string>
+    <string name="label_modes">AUTONOMOUS MODES</string>
+    <string name="label_controls">MANUAL CONTROL</string>
+
+    <!-- Dialogs / toasts -->
+    <string name="dialog_pick_device">Select Bluetooth Device</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="toast_no_paired">No paired devices found.\nPlease pair your HC-05 / HC-06 in Android Bluetooth Settings first.</string>
+    <string name="toast_connect_failed">Connection failed</string>
+    <string name="toast_lost">Bluetooth connection lost</string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="cd_forward">Move forward</string>
+    <string name="cd_backward">Move backward</string>
+    <string name="cd_left">Turn left</string>
+    <string name="cd_right">Turn right</string>
+    <string name="cd_stop">Stop the car</string>
+    <string name="cd_avoidance">Toggle obstacle avoidance mode</string>
+    <string name="cd_tracking">Toggle line tracking mode</string>
+</resources>

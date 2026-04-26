@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <!-- Backgrounds -->
+    <color name="bg_dark">#0D1117</color>
+    <color name="bg_card">#161B22</color>
+
+    <!-- Text -->
+    <color name="text_primary">#F0F6FC</color>
+    <color name="text_secondary">#8B949E</color>
+
+    <!-- Buttons -->
+    <color name="btn_connect">#1F6FEB</color>
+    <color name="btn_drive">#1F6FEB</color>
+    <color name="btn_stop">#DA3633</color>
+    <color name="btn_avoidance">#D29922</color>
+    <color name="btn_tracking">#3FB950</color>
+
+    <!-- Status colors -->
+    <color name="status_connected">#3FB950</color>
+    <color name="status_connecting">#D29922</color>
+    <color name="status_disconnected">#8B949E</color>
+
+    <!-- system defaults -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
