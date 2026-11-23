@@ -1,12 +1,12 @@
 # Host unit tests for RobotCarCore: plain asserts, no framework.
-# Usage: make -C firmware/test
+# Usage: make -C firmware/test (builds and runs the tests)
 
 CXX ?= g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -Werror -pedantic
 CORE_SRC := ../libraries/RobotCarCore/src/RobotCarCore.cpp
 CORE_HDR := ../libraries/RobotCarCore/src
 
-all: robot_car_core_test
+all: run
 
 robot_car_core_test: test_robot_car_core.cpp $(CORE_SRC)
 	$(CXX) $(CXXFLAGS) -I$(CORE_HDR) $^ -o $@

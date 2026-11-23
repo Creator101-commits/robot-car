@@ -168,7 +168,7 @@ cd android-app
 Verified on this machine (macOS, Arduino CLI 1.5.1, `arduino:avr` 1.8.8, JDK 17, Gradle 9.9.1, AGP 9.5.1, compileSdk 37.2):
 
 - `arduino-cli compile --fqbn arduino:avr:uno` on `firmware/robot_car`: **9,078 bytes flash (28% of 32,256), 551 bytes RAM (26% of 2,048)**.
-- Host tests (`make -C firmware/test`): **102 checks, 0 failures**, covering Bluetooth framing/dispatch, line-follow decisions, avoidance thresholds and turn direction, IR key mapping and pending-state behavior, and pin constants.
+- Host tests (`make -C firmware/test`): **112 checks, 0 failures**, covering Bluetooth framing/dispatch, line-follow decisions, avoidance thresholds and turn direction, IR key mapping and pending-state behavior, and pin constants.
 - Android: `./gradlew assembleDebug testDebugUnitTest lint` passes; **3 JUnit tests, 0 failures**; lint reports **0 errors** (4 informational version notices).
 - CI (`.github/workflows/ci.yml`) runs the host tests, the UNO compile and the Android build on every push.
 
