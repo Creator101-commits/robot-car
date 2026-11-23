@@ -1,6 +1,6 @@
 
-#ifndef IRremote_h
-#define IRremote_h
+#ifndef IRREMOTE_H
+#define IRREMOTE_H
 
 
 #include <stdint.h>

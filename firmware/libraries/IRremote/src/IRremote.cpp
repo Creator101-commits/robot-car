@@ -1,4 +1,4 @@
-#include "IR_remote.h"
+#include "IRremote.h"
 #include "Keymap.h"
 
 #ifndef __AVR_ATmega32U4__
