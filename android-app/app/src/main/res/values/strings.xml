@@ -5,6 +5,7 @@
     <string name="btn_connect">Connect to Bluetooth</string>
     <string name="btn_disconnect">Disconnect</string>
     <string name="status_disconnected">○  Not Connected</string>
+    <string name="status_connected_named">●  Connected: %1$s</string>
     <string name="status_connecting">Connecting…</string>
 
     <!-- D-Pad controls -->

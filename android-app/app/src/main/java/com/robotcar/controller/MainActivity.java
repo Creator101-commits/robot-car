@@ -104,20 +104,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Hold to drive, release to stop
-        attachHoldDrive(btnForward,  "%F#");
-        attachHoldDrive(btnBackward, "%B#");
-        attachHoldDrive(btnLeft,     "%L#");
-        attachHoldDrive(btnRight,    "%R#");
+        attachHoldDrive(btnForward,  CommandProtocol.FORWARD);
+        attachHoldDrive(btnBackward, CommandProtocol.BACKWARD);
+        attachHoldDrive(btnLeft,     CommandProtocol.LEFT);
+        attachHoldDrive(btnRight,    CommandProtocol.RIGHT);
 
         btnStop.setOnClickListener(v -> {
             cancelRepeat();
             setMode(null);
-            transmit("%S#");
+            transmit(CommandProtocol.STOP);
         });
 
         // Tap to activate, tap again to stop
-        btnAvoidance.setOnClickListener(v -> toggleMode('A', "%A#"));
-        btnTracking.setOnClickListener(v  -> toggleMode('T', "%T#"));
+        btnAvoidance.setOnClickListener(v -> toggleMode('A', CommandProtocol.AVOIDANCE));
+        btnTracking.setOnClickListener(v  -> toggleMode('T', CommandProtocol.TRACE));
 
         setControlsEnabled(false);
     }
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
                     cancelRepeat();
-                    transmit("%S#");
+                    transmit(CommandProtocol.STOP);
                     v.performClick();
                     break;
                 default:
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
     private void toggleMode(char mode, String cmd) {
         if (activeMode != null && activeMode == mode) {
             setMode(null);
-            transmit("%S#");
+            transmit(CommandProtocol.STOP);
         } else {
             cancelRepeat();
             setMode(mode);
@@ -178,7 +178,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Shows paired device list for the user to pick from
     private void pickDevice() {
-        if (!hasBtConnectPermission()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+                        != PackageManager.PERMISSION_GRANTED) {
             requestBtPermissions();
             return;
         }
@@ -208,6 +210,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Opens RFCOMM socket on a background thread
     private void doConnect(BluetoothDevice device) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+                        != PackageManager.PERMISSION_GRANTED) {
+            requestBtPermissions();
+            return;
+        }
+
         String deviceName = (device.getName() != null) ? device.getName() : device.getAddress();
 
         tvStatus.setText(getString(R.string.status_connecting));
@@ -217,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 BluetoothSocket sock = device.createRfcommSocketToServiceRecord(BT_UUID);
-                if (btAdapter != null) btAdapter.cancelDiscovery();
                 sock.connect();
 
                 btSocket  = sock;
@@ -225,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                 connected = true;
 
                 runOnUiThread(() -> {
-                    tvStatus.setText("●  Connected — " + deviceName);
+                    tvStatus.setText(getString(R.string.status_connected_named, deviceName));
                     tvStatus.setTextColor(ContextCompat.getColor(this, R.color.status_connected));
                     btnConnect.setText(getString(R.string.btn_disconnect));
                     btnConnect.setEnabled(true);
@@ -250,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
     // Stops the car, closes the socket, resets UI
     private void doDisconnect() {
         cancelRepeat();
-        transmit("%S#");
+        transmit(CommandProtocol.STOP);
 
         try {
             if (outStream != null) outStream.close();
@@ -301,41 +309,18 @@ public class MainActivity extends AppCompatActivity {
         if (enabled) refreshModeButtons();
     }
 
-    private boolean hasBtConnectPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return ContextCompat.checkSelfPermission(
-                this, Manifest.permission.BLUETOOTH_CONNECT
-            ) == PackageManager.PERMISSION_GRANTED;
-        }
-        return true;
-    }
-
     private void requestBtPermissions() {
-        String[] required;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            required = new String[]{
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT
-            };
-        } else {
-            required = new String[]{
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            };
-        }
+        // Only BLUETOOTH_CONNECT is a runtime permission (API 31+); the
+        // legacy BLUETOOTH/BLUETOOTH_ADMIN permissions are install-time and
+        // ACCESS_FINE_LOCATION is only needed for device discovery, which
+        // this app does not use.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
 
-        List<String> missing = new ArrayList<>();
-        for (String perm : required) {
-            if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
-                missing.add(perm);
-            }
-        }
-
-        if (!missing.isEmpty()) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+                != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                 this,
-                missing.toArray(new String[0]),
+                new String[]{Manifest.permission.BLUETOOTH_CONNECT},
                 PERM_REQUEST_CODE
             );
         }
