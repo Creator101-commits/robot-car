@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  firmware-host-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run RobotCarCore host tests
+        run: make -C firmware/test
+
+  firmware-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install arduino-cli
+        run: |
+          curl -fsSL -o /tmp/arduino-cli.tar.gz \
+            https://github.com/arduino/arduino-cli/releases/download/v1.5.1/arduino-cli_1.5.1_Linux_64bit.tar.gz
+          sudo tar -xzf /tmp/arduino-cli.tar.gz -C /usr/local/bin arduino-cli
+          arduino-cli version
+      - name: Install AVR core and Servo library
+        run: |
+          arduino-cli core install arduino:avr@1.8.8
+          arduino-cli lib install Servo@1.1.3
+      - name: Compile UNO sketch
+        run: |
+          arduino-cli compile --fqbn arduino:avr:uno \
+            --libraries firmware/libraries firmware/robot_car
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install SDK platform and build-tools
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-37.2" "build-tools;36.1.0"
+      - name: Verify Gradle wrapper
+        working-directory: android-app
+        run: ./gradlew --version
+      - name: Build, unit test and lint
+        working-directory: android-app
+        run: ./gradlew assembleDebug testDebugUnitTest lint --no-daemon
