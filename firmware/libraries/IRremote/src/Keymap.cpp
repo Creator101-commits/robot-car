@@ -42,7 +42,7 @@
     // {"#", 0x4A}
 // };
 
-ST_KEY_MAP normal_ir_keymap[18] = {
+ST_KEY_MAP normal_ir_keymap[17] = {
 	{"1", 0x16},
     {"2", 0x19},
     {"3", 0x0d},

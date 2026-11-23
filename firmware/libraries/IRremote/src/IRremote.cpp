@@ -220,18 +220,26 @@ unsigned char IRremote::getCode() {
 }
 
 String IRremote::getKeyMap(byte keycode, byte ir_type) {
-  ST_KEY_MAP *irkeymap = normal_ir_keymap;
-  if (ir_type == IR_TYPE_EM) irkeymap = em_ir_keymap;
-  for (byte i = 0; i < KEY_MAX; i++) {
+  const ST_KEY_MAP *irkeymap = normal_ir_keymap;
+  byte len = NORMAL_IR_KEYMAP_LEN;
+  if (ir_type == IR_TYPE_EM) {
+    irkeymap = em_ir_keymap;
+    len = EM_IR_KEYMAP_LEN;
+  }
+  for (byte i = 0; i < len; i++) {
     if (irkeymap[i].keycode == keycode) return irkeymap[i].keyname;
   }
   return "";
 }
 
 byte IRremote::getIrKey(byte keycode, byte ir_type) {
-  ST_KEY_MAP *irkeymap = normal_ir_keymap;
-  if (ir_type == IR_TYPE_EM) irkeymap = em_ir_keymap;
-  for (byte i = 0; i < KEY_MAX; i++) {
+  const ST_KEY_MAP *irkeymap = normal_ir_keymap;
+  byte len = NORMAL_IR_KEYMAP_LEN;
+  if (ir_type == IR_TYPE_EM) {
+    irkeymap = em_ir_keymap;
+    len = EM_IR_KEYMAP_LEN;
+  }
+  for (byte i = 0; i < len; i++) {
     if (irkeymap[i].keycode == keycode) return i;
   }
   return 0xFF;

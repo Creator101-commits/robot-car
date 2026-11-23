@@ -2,6 +2,8 @@
 #define _KEYMAY_H_
 #include <Arduino.h>
 #define KEY_MAX 21
+#define NORMAL_IR_KEYMAP_LEN 17
+#define EM_IR_KEYMAP_LEN 21
 typedef struct
 {
     String keyname;
