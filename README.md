@@ -1,15 +1,15 @@
 # Robot Car
 
-> A 4-wheel Arduino robot car with Bluetooth control, IR remote, obstacle avoidance, and infrared line tracking — all driven from a custom Android app.
+> A 4-wheel Arduino robot car with Bluetooth control, IR remote, obstacle avoidance, and infrared line tracking, driven from a custom Android app.
 
 [![Arduino](https://img.shields.io/badge/Arduino-UNO-00979D?style=flat-square&logo=arduino)](https://www.arduino.cc)
 [![Android](https://img.shields.io/badge/Android-API%2021%2B-3DDC84?style=flat-square&logo=android)](https://developer.android.com)
-[![Java](https://img.shields.io/badge/Java-8-ED8B00?style=flat-square&logo=openjdk)](https://www.java.com)
+[![Java](https://img.shields.io/badge/JDK-17-ED8B00?style=flat-square&logo=openjdk)](https://www.java.com)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-This project is a fully functional 4-wheel robot car built on an Arduino UNO. It supports three control methods: a custom Android Bluetooth app, an IR remote, and two fully autonomous modes. The car uses an HC-05/HC-06 Bluetooth module to receive commands from the phone, a servo-mounted HC-SR04 ultrasonic sensor for obstacle detection, and three infrared sensors on the underside for line tracking.
+This project is a 4-wheel robot car built on an Arduino UNO. It supports three control methods: a custom Android Bluetooth app, an IR remote, and two autonomous modes. The car uses an HC-05/HC-06 Bluetooth module to receive commands from the phone, a servo-mounted HC-SR04 ultrasonic sensor for obstacle detection, and three infrared sensors on the underside for line tracking.
 
- The companion Android app is written in Java and communicates with the car over Classic Bluetooth (SPP). It features a D-pad for manual driving with hold-to-move controls, a one-tap obstacle avoidance toggle, and a one-tap line tracking toggle, all in a clean dark-themed UI.
+The companion Android app is written in Java and communicates with the car over Classic Bluetooth (SPP). It features a D-pad for manual driving with hold-to-move controls, a one-tap obstacle avoidance toggle, and a one-tap line tracking toggle, all in a clean dark-themed UI.
 
 ![](robot-car-demo.jpg)
 
@@ -18,64 +18,62 @@ This project is a fully functional 4-wheel robot car built on an Arduino UNO. It
 ### 1 - Upload the Arduino Sketch
 
 **Requirements:**
-- [Arduino IDE](https://www.arduino.cc/en/software) 1.8.x or newer
+- [Arduino CLI](https://arduino.github.io/arduino-cli/) 1.5.x or newer (or the Arduino IDE 1.8.x+)
 - Arduino UNO (or compatible board)
-- `Servo` library (bundled with Arduino IDE)
+- `Servo` library 1.1.3 (installed via `arduino-cli lib install Servo@1.1.3`)
 
-**Steps:**
+**Steps (arduino-cli):**
 
 ```sh
 # Clone the repository
-git clone https://github.com/yourname/robot-car.git
+git clone https://github.com/Creator101-commits/robot-car.git
 cd robot-car
+
+arduino-cli core install arduino:avr@1.8.8
+arduino-cli lib install Servo@1.1.3
+arduino-cli compile --fqbn arduino:avr:uno \
+  --libraries firmware/libraries firmware/robot_car
+arduino-cli upload --fqbn arduino:avr:uno --libraries firmware/libraries firmware/robot_car
 ```
 
-1. Open `robot-car-main-code.ino` in the Arduino IDE.
-2. Make sure the following files are in the same folder:
-   - `IR_remote.cpp` / `IR_remote.h`
-   - `Keymap.cpp` / `keymap.h`
-3. Select **Tools → Board → Arduino UNO**.
-4. Select the correct port under **Tools → Port**.
-5. Click **Upload**.
+**Steps (Arduino IDE):** the sketch is `firmware/robot_car/robot_car.ino`. The local libraries in `firmware/libraries/` (`RobotCarCore`, `IRremote`) must be visible to the IDE, either by copying them into your sketchbook `libraries/` folder or via **Sketch > Include Library > Add .ZIP Library**. Select **Tools > Board > Arduino UNO**, pick the port, and upload.
 
 ---
 
-### 2 — Build the Android App
+### 2 - Build the Android App
 
 **Requirements:**
-- [Android Studio](https://developer.android.com/studio) Hedgehog (2023.1.1) or newer
-- Android SDK API 21 (Android 5.0) or higher
+- JDK 17
+- Android SDK with platform `android-37.2` and build-tools (the Gradle build installs what it needs, or install via `sdkmanager`)
 - A physical Android device (emulators do not support Bluetooth)
 
-**Option A — Android Studio (recommended):**
+**Option A - Android Studio:**
 
 1. Open Android Studio and choose **Open an Existing Project**.
 2. Navigate to `android-app/` and open it.
 3. Let Gradle sync finish.
 4. Connect your Android phone via USB with **USB Debugging** enabled.
-5. Click **Run ▶** (or press `Shift+F10`).
+5. Click **Run** (or press `Shift+F10`).
 
-**Option B — Command Line:**
+**Option B - Command Line:**
 
 ```sh
 cd android-app
 ./gradlew assembleDebug
-# APK → app/build/outputs/apk/debug/app-debug.apk
-```
+# APK -> app/build/outputs/apk/debug/app-debug.apk
 
-```sh
 # Install directly to a connected device
 ./gradlew installDebug
 ```
 
 ---
 
-### 3 — Pair the Bluetooth Module
+### 3 - Pair the Bluetooth Module
 
 Before using the app, pair the HC-05 / HC-06 from your phone's system settings:
 
 1. Power on the robot car.
-2. Go to **Android Settings → Bluetooth**.
+2. Go to **Android Settings > Bluetooth**.
 3. Scan and pair with **HC-05** or **HC-06** (default PIN: `1234` or `0000`).
 4. The device will now appear in the app's connection list.
 
@@ -83,14 +81,14 @@ Before using the app, pair the HC-05 / HC-06 from your phone's system settings:
 
 **Manual driving:**
 
-Launch the app, tap **Connect to Bluetooth**, and select your module. Once the status bar turns green, use the D-pad to drive. Hold any direction button to keep moving — the car stops the moment you lift your finger.
+Launch the app, tap **Connect to Bluetooth**, and select your module. Once the status bar turns green, use the D-pad to drive. Hold any direction button to keep moving; the car stops the moment you lift your finger.
 
 ```
-Hold ▲ Forward   → car moves forward at full speed
-Hold ▼ Back      → car reverses
-Hold ◀ Left      → rotates left
-Hold ▶ Right     → rotates right
-Tap  ■ Stop      → immediate stop, exits any active mode
+Hold Forward   -> car moves forward at full speed
+Hold Back      -> car reverses
+Hold Left      -> rotates left
+Hold Right     -> rotates right
+Tap  Stop      -> immediate stop, exits any active mode
 ```
 
 **Obstacle Avoidance mode:**
@@ -103,43 +101,91 @@ Tap **Line Tracking**. The three IR sensors on the underside of the car detect a
 
 **IR Remote:**
 
-The car also responds to a standard NEC IR remote. The arrow keys map to Forward / Back / Left / Right and the OK button stops the car. IR control and Bluetooth control can be used at the same time — whichever sends a command last takes effect.
+The car also responds to a standard NEC IR remote. The arrow keys map to Forward / Back / Left / Right and the OK button stops the car. IR control and Bluetooth control can be used at the same time; whichever sends a command last takes effect.
 
-## Development setup
+## Protocol
 
-**Arduino side:**
+Bluetooth commands are framed as `%X#` (for example `%F#`); anything else is ignored by the parser. Frames longer than 4 bytes stop the car.
 
-All source files live in the root of the repository. No extra library installation is needed beyond the built-in `Servo` library. Open the folder in the Arduino IDE and it will detect the sketch automatically.
+| Command | Action |
+|---------|--------|
+| `F` | Drive forward (held ~500 ms) |
+| `B` | Drive backward (held ~500 ms) |
+| `L` | Rotate left (held ~300 ms) |
+| `R` | Rotate right (held ~300 ms) |
+| `S` | Stop |
+| `T` | Enter line-tracking routine |
+| `A` | Enter obstacle-avoidance routine |
 
-```sh
-# Verify the sketch compiles without uploading
-arduino-cli compile --fqbn arduino:avr:uno robot-car-main-code.ino
-```
+`T` and `A` run their autonomous routine until a new command (typically `S`) arrives.
 
-**Android side:**
+The same table is implemented in `firmware/libraries/RobotCarCore` (parsed and dispatched by the sketch) and in `android-app/.../CommandProtocol.java` (the app's only source of command bytes). The firmware host tests and the JUnit tests both assert this table.
 
-The app is a standard Android Gradle project. Open `android-app/` in Android Studio and sync — no extra setup is required.
+IR remote keycodes (NEC): Up `0x46`, Down `0x15`, Left `0x44`, Right `0x43`, OK `0x40`. Up/Down/Left/Right drive or turn, OK stops.
 
-```sh
-# Build a debug APK from the command line
-cd android-app
-./gradlew assembleDebug
-
-# Run lint checks
-./gradlew lint
-```
-
-**Pin reference:**
+## Wiring
 
 | Pin | Component |
 |-----|-----------|
-| 2, 4, 5 | Left motor (direction + PWM) |
-| 6, 7, 8 | Right motor (direction + PWM) |
+| 2, 4 | Motor A direction (IN1, IN2) |
+| 5 | Motor A PWM |
+| 6 | Motor B PWM |
+| 7, 8 | Motor B direction (IN3, IN4) |
 | 9, 10, 11 | IR line sensors (Left, Center, Right) |
 | 12 | IR receiver |
 | A0 | HC-SR04 Echo |
 | A1 | HC-SR04 Trigger |
 | A2 | Servo (sensor pan) |
+
+## Development setup
+
+**Firmware:**
+
+`firmware/robot_car/robot_car.ino` contains only Arduino glue (pins, `setup`/`loop`, sensor reads, motor writes). All decision logic lives in `firmware/libraries/RobotCarCore/`, an Arduino-free library so the same code compiles and runs on the host.
+
+```sh
+# Host characterization tests for the decision logic (plain asserts, no framework)
+make -C firmware/test
+
+# Compile the UNO sketch without uploading
+arduino-cli compile --fqbn arduino:avr:uno \
+  --libraries firmware/libraries firmware/robot_car
+```
+
+**Android:**
+
+The app is a standard Android Gradle project. Open `android-app/` in Android Studio and sync.
+
+```sh
+cd android-app
+./gradlew assembleDebug      # debug APK
+./gradlew testDebugUnitTest  # JUnit tests (CommandProtocol table)
+./gradlew lint               # Android lint
+```
+
+## Verified
+
+Verified on this machine (macOS, Arduino CLI 1.5.1, `arduino:avr` 1.8.8, JDK 17, Gradle 9.9.1, AGP 9.5.1, compileSdk 37.2):
+
+- `arduino-cli compile --fqbn arduino:avr:uno` on `firmware/robot_car`: **9,078 bytes flash (28% of 32,256), 551 bytes RAM (26% of 2,048)**.
+- Host tests (`make -C firmware/test`): **102 checks, 0 failures**, covering Bluetooth framing/dispatch, line-follow decisions, avoidance thresholds and turn direction, IR key mapping and pending-state behavior, and pin constants.
+- Android: `./gradlew assembleDebug testDebugUnitTest lint` passes; **3 JUnit tests, 0 failures**; lint reports **0 errors** (4 informational version notices).
+- CI (`.github/workflows/ci.yml`) runs the host tests, the UNO compile and the Android build on every push.
+
+## Not verified
+
+The following have not been exercised on real hardware and are unverified:
+
+- On-car driving behavior, motor wiring direction, and real sensor calibration (ultrasonic distance, IR line thresholds).
+- Real Bluetooth pairing and SPP communication with an HC-05/HC-06.
+- IR remote decoding on the actual receiver and remote.
+- Behavior on physical Android devices (only compilation, unit tests and lint were run).
+
+## Notes
+
+- `firmware/libraries/IRremote/` is a custom NEC IR decoder plus keymap that shipped with the project. It carries no license header or attribution; its provenance is unknown (likely derived from the robot kit or a tutorial). It was moved into a proper Arduino library layout unchanged except for one bug fix: keymap lookups previously iterated `KEY_MAX` (21) entries over a 17-entry table and could read past the end; lookups are now bounded by the real table sizes.
+- The Android dependency versions are the newest releases that still support `minSdk 21`; newer `core`/`appcompat`/`material` releases require `minSdk 23`.
+- The app requests only `BLUETOOTH_CONNECT` at runtime on API 31+; it lists bonded devices only and never scans, so `BLUETOOTH_SCAN` and location permissions are not declared. Legacy `BLUETOOTH`/`BLUETOOTH_ADMIN` are kept with `maxSdkVersion="30"`.
 
 ## Release History
 
@@ -158,7 +204,7 @@ Distributed under the MIT license. See `LICENSE` for more information.
 
 ## Contributing
 
-1. Fork it (<https://github.com/yourname/robot-car/fork>)
+1. Fork it (<https://github.com/Creator101-commits/robot-car/fork>)
 2. Create your feature branch (`git checkout -b feature/myFeature`)
 3. Commit your changes (`git commit -am 'Add myFeature'`)
 4. Push to the branch (`git push origin feature/myFeature`)
@@ -166,7 +212,4 @@ Distributed under the MIT license. See `LICENSE` for more information.
 
 ## Acknowledgments
 
-* [LAFVIN](https://www.lafvin.com) — for the robot car kit that this project is built on. The LAFVIN 4WD smart car kit provides the chassis, motors, motor driver board, HC-SR04 ultrasonic sensor, IR sensors, and servo mount used in this build. They also provided the foundational code but I edited a lot of it to my custom robot.
-
-<!-- Markdown link & img dfn's -->
-[wiki]: https://github.com/yourname/robot-car/wiki
+* [LAFVIN](https://www.lafvin.com) for the robot car kit that this project is built on. The LAFVIN 4WD smart car kit provides the chassis, motors, motor driver board, HC-SR04 ultrasonic sensor, IR sensors, and servo mount used in this build. They also provided the foundational code but I edited a lot of it to my custom robot.
