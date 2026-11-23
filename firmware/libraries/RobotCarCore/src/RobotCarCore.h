@@ -52,9 +52,9 @@ constexpr int kLineForwardSpeed = 130;
 constexpr int kLinePivotSpeed = 180;
 constexpr int kLineTurnSpeed = 160;
 
-// Decision table ported from Infrared_Tracing(). All-white returns kNone:
-// the original writes no motor pins in that case, so the last motion
-// persists. Every other combination maps to exactly one action.
+// Decision table ported from Infrared_Tracing(). Two combinations return
+// kNone: all-white, and left+right black with center white; the original
+// has no branch for either, so the last motion persists.
 MotorCommand line_follow_command(const LineReading& reading);
 
 // --- Obstacle avoidance ---------------------------------------------------

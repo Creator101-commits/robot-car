@@ -115,8 +115,11 @@ static void test_line_follow() {
             MotorAction::kRotateRight, kLinePivotSpeed);  // 180
   CHECK_CMD(line_follow_command({true, true, true}),
             MotorAction::kStop, 0);
-  // All white: the original writes nothing, motion persists.
+  // All white and left+right black with center white: the original has no
+  // branch for either, so the last motion persists.
   CHECK_CMD(line_follow_command({false, false, false}),
+            MotorAction::kNone, 0);
+  CHECK_CMD(line_follow_command({true, false, true}),
             MotorAction::kNone, 0);
 }
 
