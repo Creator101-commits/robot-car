@@ -19,8 +19,4 @@
     <color name="status_connected">#3FB950</color>
     <color name="status_connecting">#D29922</color>
     <color name="status_disconnected">#8B949E</color>
-
-    <!-- system defaults -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 </resources>
