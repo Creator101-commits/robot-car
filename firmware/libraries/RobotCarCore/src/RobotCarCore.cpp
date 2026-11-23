@@ -15,16 +15,20 @@ MotorCommand line_follow_command(const LineReading& r) {
     return {MotorAction::kNone, 0};
 }
 
-bool avoidance_triggered(float front_distance_cm) {
-    return front_distance_cm > 0.0f && front_distance_cm <= kAvoidDistanceCm;
+int distance_cm_from_echo_us(unsigned long echo_us) {
+    return (int)(echo_us / 58.00);
 }
 
-MotorAction avoidance_turn(float left_distance_cm, float right_distance_cm) {
+bool avoidance_triggered(int distance_cm) {
+    return distance_cm > 0 && distance_cm <= kAvoidDistanceCm;
+}
+
+MotorAction avoidance_turn(int left_distance_cm, int right_distance_cm) {
     return right_distance_cm <= left_distance_cm ? MotorAction::kRotateLeft
                                                  : MotorAction::kRotateRight;
 }
 
-MotorCommand avoidance_command(float front_cm, float left_cm, float right_cm) {
+MotorCommand avoidance_command(int front_cm, int left_cm, int right_cm) {
     if (!avoidance_triggered(front_cm)) {
         return {MotorAction::kForward, kAvoidCruiseSpeed};
     }

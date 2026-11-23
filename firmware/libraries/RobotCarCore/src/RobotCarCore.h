@@ -58,20 +58,26 @@ constexpr int kLineTurnSpeed = 160;
 MotorCommand line_follow_command(const LineReading& reading);
 
 // --- Obstacle avoidance ---------------------------------------------------
-constexpr float kAvoidDistanceCm = 20.0f;
+// The original stored checkdistance() into volatile int globals, truncating
+// readings to whole centimeters before every comparison. Distances here are
+// int cm for the same reason; distance_cm_from_echo_us reproduces the
+// original (int)(echo_us / 58.00) conversion exactly.
+constexpr int kAvoidDistanceCm = 20;
 constexpr int kAvoidCruiseSpeed = 150;
 constexpr int kAvoidTurnSpeed = 255;
 
-// checkdistance() divides the echo pulse by 58; a timeout yields 0, which the
-// original treats as "clear" because the trigger requires 0 < d <= 20.
-bool avoidance_triggered(float front_distance_cm);
+int distance_cm_from_echo_us(unsigned long echo_us);
+
+// Triggered iff 1 <= d <= 20, matching the original int comparison. A
+// timeout (0 us) reads as 0 cm and counts as clear.
+bool avoidance_triggered(int distance_cm);
 
 // On a tie (right <= left) the original rotates left.
-MotorAction avoidance_turn(float left_distance_cm, float right_distance_cm);
+MotorAction avoidance_turn(int left_distance_cm, int right_distance_cm);
 
 // Full decision: clear -> cruise forward at 150; triggered -> turn at 255.
 // The servo sweep that produces left/right readings stays in the sketch.
-MotorCommand avoidance_command(float front_cm, float left_cm, float right_cm);
+MotorCommand avoidance_command(int front_cm, int left_cm, int right_cm);
 
 // --- Bluetooth protocol ---------------------------------------------------
 // Wire format "%X#": '%' at index 0, command char at index 1, '#' last,

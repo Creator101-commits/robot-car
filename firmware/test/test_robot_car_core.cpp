@@ -123,27 +123,41 @@ static void test_line_follow() {
 // --- Obstacle avoidance -----------------------------------------------------
 
 static void test_avoidance() {
-  // Trigger window: 0 < d <= 20 cm. Zero (sensor timeout) is "clear".
-  CHECK(!avoidance_triggered(0.0f));
-  CHECK(!avoidance_triggered(-5.0f));
-  CHECK(avoidance_triggered(0.1f));
-  CHECK(avoidance_triggered(20.0f));
-  CHECK(!avoidance_triggered(20.1f));
-  CHECK(!avoidance_triggered(150.0f));
+  // Distances are whole cm, truncated like the original int globals.
+  CHECK(distance_cm_from_echo_us(1200) == 20);  // 20.69 cm -> 20
+  CHECK(distance_cm_from_echo_us(1218) == 21);  // 21.0 cm -> 21
+  CHECK(distance_cm_from_echo_us(29) == 0);     // 0.5 cm -> 0
+  CHECK(distance_cm_from_echo_us(0) == 0);      // pulseIn timeout
+  CHECK(distance_cm_from_echo_us(1792) == 30);  // 30.9 cm -> 30
+  CHECK(distance_cm_from_echo_us(1746) == 30);  // 30.1 cm -> 30
+
+  // Trigger window on int cm: 0 < d <= 20. Zero (timeout/sub-cm) is "clear".
+  CHECK(!avoidance_triggered(0));
+  CHECK(!avoidance_triggered(-5));
+  CHECK(avoidance_triggered(1));
+  CHECK(avoidance_triggered(20));
+  CHECK(!avoidance_triggered(21));
+  CHECK(!avoidance_triggered(150));
 
   // Turn direction: right <= left rotates left (tie goes left).
-  CHECK(avoidance_turn(10.0f, 5.0f) == MotorAction::kRotateLeft);
-  CHECK(avoidance_turn(5.0f, 10.0f) == MotorAction::kRotateRight);
-  CHECK(avoidance_turn(7.0f, 7.0f) == MotorAction::kRotateLeft);
+  CHECK(avoidance_turn(10, 5) == MotorAction::kRotateLeft);
+  CHECK(avoidance_turn(5, 10) == MotorAction::kRotateRight);
+  CHECK(avoidance_turn(7, 7) == MotorAction::kRotateLeft);
+  // 30.9 cm and 30.1 cm both truncate to 30: a tie, so rotate left.
+  CHECK(avoidance_turn(distance_cm_from_echo_us(1792),
+                       distance_cm_from_echo_us(1746)) == MotorAction::kRotateLeft);
 
-  CHECK_CMD(avoidance_command(50.0f, 0.0f, 0.0f),
+  CHECK_CMD(avoidance_command(50, 0, 0),
             MotorAction::kForward, kAvoidCruiseSpeed);   // 150
-  CHECK_CMD(avoidance_command(0.0f, 0.0f, 0.0f),
+  CHECK_CMD(avoidance_command(0, 0, 0),
             MotorAction::kForward, kAvoidCruiseSpeed);   // timeout = clear
-  CHECK_CMD(avoidance_command(15.0f, 10.0f, 5.0f),
+  CHECK_CMD(avoidance_command(15, 10, 5),
             MotorAction::kRotateLeft, kAvoidTurnSpeed);  // 255
-  CHECK_CMD(avoidance_command(15.0f, 5.0f, 10.0f),
+  CHECK_CMD(avoidance_command(15, 5, 10),
             MotorAction::kRotateRight, kAvoidTurnSpeed);
+  // 20.7 cm truncates to 20 and triggers; 21.0 cm does not.
+  CHECK(avoidance_triggered(distance_cm_from_echo_us(1200)));
+  CHECK(!avoidance_triggered(distance_cm_from_echo_us(1218)));
 }
 
 // --- IR remote ---------------------------------------------------------------

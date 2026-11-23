@@ -91,29 +91,29 @@ void Infrared_Tracing() {
   apply_motor(line_follow_command(reading));
 }
 
-float checkdistance() {
+int checkdistance() {
   digitalWrite(pins::kUltrasonicTrig, LOW);
   delayMicroseconds(2);
   digitalWrite(pins::kUltrasonicTrig, HIGH);
   delayMicroseconds(10);
   digitalWrite(pins::kUltrasonicTrig, LOW);
-  float distance = pulseIn(pins::kUltrasonicEcho, HIGH) / 58.00;
+  int distance = distance_cm_from_echo_us(pulseIn(pins::kUltrasonicEcho, HIGH));
   delay(10);
   return distance;
 }
 
 void Ultrasonic_Avoidance() {
-  float front_distance = checkdistance();
+  int front_distance = checkdistance();
   if (avoidance_triggered(front_distance)) {
     STOP();
     delay(100);
     servo_A2.write(180);
     delay(500);
-    float left_distance = checkdistance();
+    int left_distance = checkdistance();
     delay(100);
     servo_A2.write(0);
     delay(500);
-    float right_distance = checkdistance();
+    int right_distance = checkdistance();
     delay(100);
     MotorAction turn = avoidance_turn(left_distance, right_distance);
     if (turn == MotorAction::kRotateLeft) {
