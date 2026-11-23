@@ -117,7 +117,7 @@ Bluetooth commands are framed as `%X#` (for example `%F#`); anything else is ign
 | `T` | Enter line-tracking routine |
 | `A` | Enter obstacle-avoidance routine |
 
-`T` and `A` run their autonomous routine until a new command (typically `S`) arrives.
+`T` and `A` run their autonomous routine until a new command (typically `S`) arrives. A frame with any other command character (for example `%Z#`) parses successfully but matches no case: it is a no-op that, like `T`/`A`, leaves the buffer in place. The app never sends such frames.
 
 The same table is implemented in `firmware/libraries/RobotCarCore` (parsed and dispatched by the sketch) and in `android-app/.../CommandProtocol.java` (the app's only source of command bytes). The firmware host tests and the JUnit tests both assert this table.
 
@@ -186,6 +186,17 @@ The following have not been exercised on real hardware and are unverified:
 - `firmware/libraries/IRremote/` is a custom NEC IR decoder plus keymap that shipped with the project. It carries no license header or attribution; its provenance is unknown (likely derived from the robot kit or a tutorial). It was moved into a proper Arduino library layout unchanged except for one bug fix: keymap lookups previously iterated `KEY_MAX` (21) entries over a 17-entry table and could read past the end; lookups are now bounded by the real table sizes.
 - The Android dependency versions are the newest releases that still support `minSdk 21`; newer `core`/`appcompat`/`material` releases require `minSdk 23`.
 - The app requests only `BLUETOOTH_CONNECT` at runtime on API 31+; it lists bonded devices only and never scans, so `BLUETOOTH_SCAN` and location permissions are not declared. Legacy `BLUETOOTH`/`BLUETOOTH_ADMIN` are kept with `maxSdkVersion="30"`.
+
+## Behavior changes from the original sketch
+
+The rebuild preserves the original decision logic, with these disclosed differences:
+
+- **IR key reads:** the original called `ir.getCode()` up to 5 times per loop in its if/else chain, and `IRremote::loop()` clears `irRead` about 1 ms after a decode, so reads within one iteration could see different values and some keypresses could be missed. The rebuild reads the code once per loop, which is deterministic. This is a deliberate fix, kept as-is.
+- **Keymap bounds:** `getKeyMap`/`getIrKey` iterated `KEY_MAX` (21) entries over a 17-entry table and could read past the end; lookups are now bounded by the real table sizes (see Notes).
+- **Compile fixes:** the sketch did not compile as committed (`IR_remote.h` missing, then `Servo.h`); resolved by proper libraries under `firmware/libraries/`.
+- **Launcher icons:** the project had no `mipmap` resources, so resource linking could never succeed; simple generated PNG icons were added.
+- **Status string:** the hardcoded "Connected" text (which contained an em dash) is now a string resource, `Connected: %1$s`.
+- **Distance units:** ultrasonic distances are whole centimeters, truncated exactly like the original `volatile int` globals (`(int)(echo_us / 58.00)`); an earlier float version of this logic was corrected.
 
 ## Release History
 
