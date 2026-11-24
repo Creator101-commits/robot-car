@@ -172,6 +172,36 @@ Verified on this machine (macOS, Arduino CLI 1.5.1, `arduino:avr` 1.8.8, JDK 17,
 - Android: `./gradlew assembleDebug testDebugUnitTest lint` passes; **3 JUnit tests, 0 failures**; lint reports **0 errors** (4 informational version notices).
 - CI (`.github/workflows/ci.yml`) runs the host tests, the UNO compile and the Android build on every push.
 
+### Decision logic, rendered from the firmware
+
+![](decision-logic.png)
+
+The figure is rendered by `tools/render_figure.py`, which compiles
+`firmware/libraries/RobotCarCore` with `g++` (the same flags as
+`firmware/test/Makefile`), runs `tools/robotcar_dump.cpp`, and plots
+the `MotorCommand` decisions it prints. Regenerate with
+`uv run --with matplotlib python tools/render_figure.py`. Like the rest
+of this section it is **host-verified logic, not hardware-tested
+behavior**; the firmware does not name wheel sides, so the motors are
+labeled Motor A and Motor B.
+
+#### What the figure shows
+
+- (a) Line-following motor commands for the 8 line-sensor states
+  (bits = left, center, right): only the center-on pattern drives
+  straight ahead at PWM 130; single-side errors turn or pivot at
+  160-180 with opposite signs on Motor A and Motor B; all-black stops;
+  all-white and the left+right split produce no command at all
+  ("hold", the last motion persists).
+- (b) Obstacle-avoidance response over 1-60 cm with a self-consistent
+  reading (front = left = right): the car cruises forward at PWM 150
+  outside the band and turns at PWM 255 inside 1-20 cm; the dotted
+  line marks the 20 cm threshold, and the tie rule
+  (`right <= left`) always rotates left on equal readings.
+
+The whole autonomous behavior is two small decision tables: line
+following recenters on the line, and avoidance turns inside 20 cm.
+
 ## Not verified
 
 The following have not been exercised on real hardware and are unverified:
