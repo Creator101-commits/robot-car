@@ -176,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
         repeatCmd = null;
     }
 
-    // Shows paired device list for the user to pick from
     private void pickDevice() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)

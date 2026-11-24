@@ -41,7 +41,6 @@ public class CommandProtocolTest {
                 CommandProtocol.frame(c);
                 fail("expected IllegalArgumentException for '" + c + "'");
             } catch (IllegalArgumentException expected) {
-                // expected
             }
         }
     }
