@@ -194,10 +194,11 @@ labeled Motor A and Motor B.
   all-white and the left+right split produce no command at all
   ("hold", the last motion persists).
 - (b) Obstacle-avoidance response over 1-60 cm with a self-consistent
-  reading (front = left = right): the car cruises forward at PWM 150
-  outside the band and turns at PWM 255 inside 1-20 cm; the dotted
-  line marks the 20 cm threshold, and the tie rule
-  (`right <= left`) always rotates left on equal readings.
+  reading (front = left = right): outside the band both motors cruise
+  forward at the same PWM 150 (Motor A dashed over Motor B), and
+  inside 1-20 cm the car turns at PWM 255; the dotted line marks the
+  20 cm threshold, and the tie rule (`right <= left`) always rotates
+  left on equal readings.
 
 The whole autonomous behavior is two small decision tables: line
 following recenters on the line, and avoidance turns inside 20 cm.
