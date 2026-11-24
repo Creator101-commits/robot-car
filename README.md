@@ -2,13 +2,13 @@
 
 > A 4-wheel Arduino robot car with Bluetooth control, IR remote, obstacle avoidance, and infrared line tracking, driven from a custom Android app.
 
-![](robot-car-demo.jpg)
+![The assembled 4-wheel Arduino robot car](robot-car-demo.jpg)
 
 An Arduino UNO with an HC-05/HC-06 Bluetooth module, a servo-mounted HC-SR04 and three IR line sensors. The Java Android app (Classic Bluetooth SPP) drives it with a hold-to-move D-pad and one-tap toggles for avoidance and line tracking.
 
 **The firmware has never been run on the physical car.** Everything verified below is host-tested decision logic and compilation, not hardware behavior.
 
-![](decision-logic.png)
+![Robot car decision logic rendered from the firmware: line-following motor commands for the 8 sensor states and the obstacle-avoidance response over distance](decision-logic.png)
 
 Rendered by `tools/render_figure.py` from `RobotCarCore` compiled with `g++`: (a) line-following motor commands for the 8 sensor states (bits = left, center, right), (b) the avoidance response over 1-60 cm (front = left = right). The firmware does not name wheel sides, so motors are labeled Motor A and Motor B. Regenerate: `uv run --with matplotlib python tools/render_figure.py`.
 
@@ -17,7 +17,7 @@ Rendered by `tools/render_figure.py` from `RobotCarCore` compiled with `g++`: (a
 Verified locally (macOS, Arduino CLI 1.5.1, `arduino:avr` 1.8.8, JDK 17, Gradle 9.9.1):
 
 - Host tests (`make -C firmware/test`): **112 checks, 0 failures**.
-- UNO compile: **9,078 bytes flash (28% of 32,256), 551 bytes RAM (26% of 2,048)**.
+- UNO compile: **9,124 bytes flash (28% of 32,256), 551 bytes RAM (26% of 2,048)**.
 - Android: `assembleDebug testDebugUnitTest lint` passes; **3 JUnit tests, 0 failures**, lint **0 errors**.
 - CI (`.github/workflows/ci.yml`) runs the host tests, the UNO compile and the Android build on every push.
 
@@ -41,7 +41,7 @@ Bluetooth commands are framed as `%X#` (for example `%F#`); anything else is ign
 
 `T` and `A` run their routine until a new command (typically `S`) arrives; other command characters parse as no-ops that leave the buffer in place, and the app never sends them.
 
-IR remote keycodes (NEC): Up `0x46`, Down `0x15`, Left `0x44`, Right `0x43` drive or turn; OK `0x40` stops.
+IR remote keycodes (NEC): Up `0x46`, Down `0x15`, Left `0x44`, Right `0x43` drive or turn; OK `0x40` stops. IR and Bluetooth control can be used at the same time; whichever sends a command last takes effect.
 
 The same table is shared by `RobotCarCore` and `CommandProtocol.java`; both test suites assert it.
 
