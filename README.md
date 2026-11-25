@@ -1,6 +1,6 @@
 # Robot Car
 
-> A 4-wheel Arduino robot car with Bluetooth control, IR remote, obstacle avoidance, and infrared line tracking, driven from a custom Android app.
+> Arduino robot car driven by a custom Android app, with obstacle avoidance and line tracking, verified by 112 firmware tests.
 
 ![The assembled 4-wheel Arduino robot car](robot-car-demo.jpg)
 
