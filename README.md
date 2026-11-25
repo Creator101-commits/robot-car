@@ -1,6 +1,6 @@
 # Robot Car
 
-> Arduino robot car driven by a custom Android app, with obstacle avoidance and line tracking, verified by 112 firmware tests.
+> Android-controlled Arduino car
 
 ![The assembled 4-wheel Arduino robot car](robot-car-demo.jpg)
 
@@ -23,7 +23,7 @@ Verified locally (macOS, Arduino CLI 1.5.1, `arduino:avr` 1.8.8, JDK 17, Gradle 
 
 ## How it works
 
-`firmware/robot_car/robot_car.ino` is Arduino glue only (pins, `setup`/`loop`, sensor reads, motor writes); all decision logic lives in `firmware/libraries/RobotCarCore/`, an Arduino-free library that compiles and runs on the host.
+`firmware/robot_car/robot_car.ino` is Arduino glue only (pins, `setup`/`loop`, sensor reads, motor writes); all decision logic lives in `firmware/libraries/RobotCarCore/`, an Arduino-free library that compiles and runs on the host. `firmware/libraries/IRremote/` is vendored with unknown provenance and no license header.
 
 ## Protocol
 
@@ -85,9 +85,3 @@ Pair the HC-05/HC-06 in Android Bluetooth settings first (PIN `1234` or `0000`).
 - **Keymap bounds:** lookups iterated `KEY_MAX` (21) entries over a 17-entry table, reading past the end; now bounded by the real table sizes.
 - **Compile fixes:** the sketch did not compile as committed (`IR_remote.h` missing, then `Servo.h`); resolved by proper libraries, plus generated launcher icons and a `Connected: %1$s` string resource.
 - **Distance units:** ultrasonic distances are whole centimeters, truncated like the original (`(int)(echo_us / 58.00)`).
-
-## Notes
-
-- `firmware/libraries/IRremote/` is a vendored custom NEC IR decoder plus keymap with unknown provenance (no license header; likely derived from the robot kit or a tutorial).
-- Not hardware-verified: on-car driving, motor wiring, sensor calibration, real Bluetooth pairing, IR decode, and physical Android devices (only compilation, unit tests and lint ran).
-- The app requests only `BLUETOOTH_CONNECT` on API 31+, never scans, and its Android dependency versions are the newest supporting `minSdk 21`.
